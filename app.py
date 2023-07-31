@@ -34,3 +34,52 @@ def get_all_cupcakes_list():
     # Respond with JSON by jsonify
     return jsonify(cupcakes=all_cupcakes)
 
+## GET /api/cupcakes/<int:cupcake-id>
+@app.route("/api/cupcakes/<int:cupcake_id>")
+def get_cupcake(cupcake_id):
+    """Returns JSON for one cupcake in particular"""
+    # Get data about a single cupcake.
+    # This should raise a 404 if the cupcake cannot be found.
+    cupcake_obj = Cupcake.query.get_or_404(cupcake_id)
+    # Serialize the data like: {cupcake: {id, flavor, size, rating, image}}
+    cupcake = cupcake_obj.serialize()
+    # Respond with JSON by jsonify
+    return jsonify(cupcake=cupcake)
+
+
+## POST /api/cupcakes
+@app.route("/api/cupcakes", methods=["POST"])
+def create_cupcake():
+    """Creates a new cupcake and returns JSON of that created cupcake"""
+    
+    # # debuggin none type 
+    # # import pdb; pdb.set_trace()
+    # print("\n\n")
+    # print("\n###################################################################################\n")
+    # print("request:",request)
+    # print("request.data:",request.data)
+    # print("request.json:",request.json)
+    # print("\n###################################################################################\n")
+
+    # Create a cupcake with flavor, size, rating and image data from the body of the request.
+    new_cupcake = Cupcake( 
+        flavor = request.json["flavor"],
+        size   = request.json["size"],
+        rating = request.json["rating"],
+        image  = request.json.get("image")
+        )
+    
+
+    # add cupcake to db
+    db.session.add(new_cupcake)
+    db.session.commit()
+
+    # Respond with JSON like: {cupcake: {id, flavor, size, rating, image}}.
+    response_json = jsonify(cupcake=new_cupcake.serialize())
+    return (response_json, 201)
+
+
+
+
+
+
