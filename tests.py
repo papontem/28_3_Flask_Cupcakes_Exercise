@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from app import app
 from models import db, Cupcake
+import traceback
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///cupcakes_test'
@@ -107,3 +108,84 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+
+    # Part Four: Write More Tests
+    # Add tests for the PATCH and DELETE routes.
+    def test_patch_cupcake(self):
+        with app.test_client() as client:
+            """ test that we are updating a desired cupcake with new data and that it is then reflected in our database"""
+
+            # Prepare the data for the update request
+            updated_cupcake_data = {
+                "flavor": "UpdatedTestCupcakeFlavor",
+                "size": "TestSize9000",
+                "rating": 25,
+                "image": "http://test.com/cupcake_test_image.jpg"
+            }
+
+            try:
+                
+                ## python debugger here to help ^.^ !
+                # import pdb; pdb.set_trace()
+
+                # Send a PATCH request to update the cupcake with self.cupcake.id
+                resp = client.patch(f"/api/cupcakes/{self.cupcake.id}", json=updated_cupcake_data)
+
+            except Exception as e:
+                print("\n#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#")
+                print("Exception Error in testing that our patch route for cupcakes api is working.")
+                print("An exception occurred:")
+                print("Type:", type(e).__name__)
+                print("Value:", str(e))
+                print("Traceback:", traceback.format_exc())
+                print("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#")
+            else:
+                self.assertEqual(resp.status_code, 200)
+                # Check if the response matches the updated data
+                self.assertEqual( 
+                    resp.json,
+                    {
+                        "cupcake": {
+                        "id": self.cupcake.id, 
+                        "flavor": "UpdatedTestCupcakeFlavor",
+                        "size": "TestSize9000",
+                        "rating": 25,
+                        "image": "http://test.com/cupcake_test_image.jpg"
+                        }
+                    }
+                )
+
+                # Check if the cupcake was actually updated in the database
+                cupcake = Cupcake.query.get(self.cupcake.id)
+                self.assertEqual(cupcake.flavor, "UpdatedTestCupcakeFlavor")
+                self.assertEqual(cupcake.size, "TestSize9000")
+                self.assertEqual(cupcake.rating, 25)
+                self.assertEqual(cupcake.image, "http://test.com/cupcake_test_image.jpg")
+
+
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            """
+                test that when we delete a cupcake we get a sucess and a message saying deleted.
+                TODO: test that the number of cupcakes in our database has decreased by 1.
+                TODO: might be a different test, that if we try to delete a cupcake that downs exist that we get a 404
+            """
+            try:
+                
+                ## python debugger here to help ^.^ !
+                # import pdb; pdb.set_trace()
+
+                # Send a DELETE request to update the cupcake with self.cupcake.id
+                resp = client.delete(f"/api/cupcakes/{self.cupcake.id}")
+
+            except Exception as e:
+                print("\n#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#")
+                print("Exception Error in testing that our delete route for cupcakes api is working.")
+                print("An exception occurred:")
+                print("Type:", type(e).__name__)
+                print("Value:", str(e))
+                print("Traceback:", traceback.format_exc())
+                print("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#")
+            else:
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.json, {"message": "Deleted"})

@@ -76,8 +76,8 @@ def create_cupcake():
 # Part 3: UPDATE(patch) and DELETE
 ## PATCH /api/cupcakes/<int:cupcake_id>
 @app.route("/api/cupcakes/<int:cupcake_id>", methods=["PATCH"])
-def update_cupcake(cupcake_id):
-    """Updates a particular cupcake and responds w/ JSON of that updated cupcake"""
+def patch_cupcake(cupcake_id):
+    """Updates (patch) a particular cupcake and responds w/ JSON of that updated cupcake"""
 
     cupcake = Cupcake.query.get_or_404(cupcake_id)
 
@@ -104,12 +104,3 @@ def delete_cupcake(cupcake_id):
     db.session.commit()
 
     return jsonify(message="Deleted")
-
-    # # debuggin none type 
-    # # import pdb; pdb.set_trace()
-    # print("\n\n")
-    # print("\n###################################################################################\n")
-    # print("request:",request)
-    # print("request.data:",request.data)
-    # print("request.json:",request.json)
-    # print("\n###################################################################################\n")
