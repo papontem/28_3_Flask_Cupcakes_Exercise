@@ -1,0 +1,44 @@
+<!-- prettier-ignore -->
+{% extends 'base.html'%} 
+{% block title%}Home{% endblock%}
+<!--  -->
+{% block content %}
+<!-- HTML BODY TAG CONTENT OF WEBPAGE -->
+
+<h2>Home</h2>
+<p>Welcome to this simple FLask Cupcake Database app</p>
+<!-- empty list where cupcakes should appear -->
+<div id="cupcakes_list_container">
+    <h3>List of Cupcakes:</h3>
+    <ul id="cupcake_list">
+       
+    </ul>
+</div>
+<!-- form where new cupcakes can be added -->
+<div id="add_cupcake_form_container">
+    <h3>Add Your Cupcake!</h3>
+    <form id="add_cupcake_form" action="" methods="POST">
+        <table>
+            <tr>
+                <td><label for="flavor">Flavor:</label></td>
+                <td><input type="text" id="flavor" name="flavor" placeholder="Any flavor" required></td>
+            </tr>
+            <tr>
+                <td><label for="size">Size:</label></td>
+                <td><input type="text" id="size" name="size" placeholder="Any size" required></td>
+            </tr>
+            <tr>
+                <td><label for="rating">Rating:</label></td>
+                <td><input type="text" id="rating" name="rating" placeholder="Any floating point number, EX: -10.0, 0.003, 5.7" required></td>
+            </tr>
+            <tr>
+                <td><label for="image">Image Url:</label></td>
+                <td><input type="text" id="image" name="image" placeholder="Any URL https:www.picture.com"></td>
+            </tr>
+        </table>
+        <br>
+        <button id="submit_cupcake_button">Add A Cupcake</button>
+    </form>
+</div>
+
+{% endblock %}
