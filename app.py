@@ -17,3 +17,20 @@ debug = DebugToolbarExtension(app)
 # flask-sqlalchemy init app db
 connect_db(app)
 
+
+# ************************************************************
+#         VVV RESTFUL CUPCAKE JSON API ROUTES VVV
+#   Make sure flask is running before using the api routes
+# ************************************************************
+## GET /api/cupcakes
+@app.route("/api/cupcakes")
+def get_all_cupcakes_list():
+    """Returns JSON w/ all cupcakes"""
+
+    # Get data about all cupcakes.
+    # The values should come from each cupcake instance.
+    # Serialize the data like: {cupcakes: [{id, flavor, size, rating, image}, ...]}.
+    all_cupcakes = [cupcake.serialize() for cupcake in Cupcake.query.all()]
+    # Respond with JSON by jsonify
+    return jsonify(cupcakes=all_cupcakes)
+
