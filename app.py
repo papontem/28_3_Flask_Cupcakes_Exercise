@@ -22,6 +22,8 @@ connect_db(app)
 #         VVV RESTFUL CUPCAKE JSON API ROUTES VVV
 #   Make sure flask is running before using the api routes
 # ************************************************************
+
+# Part 2: GET and POST
 ## GET /api/cupcakes
 @app.route("/api/cupcakes")
 def get_all_cupcakes_list():
@@ -38,6 +40,7 @@ def get_all_cupcakes_list():
 @app.route("/api/cupcakes/<int:cupcake_id>")
 def get_cupcake(cupcake_id):
     """Returns JSON for one cupcake in particular"""
+
     # Get data about a single cupcake.
     # This should raise a 404 if the cupcake cannot be found.
     cupcake_obj = Cupcake.query.get_or_404(cupcake_id)
@@ -51,15 +54,6 @@ def get_cupcake(cupcake_id):
 @app.route("/api/cupcakes", methods=["POST"])
 def create_cupcake():
     """Creates a new cupcake and returns JSON of that created cupcake"""
-    
-    # # debuggin none type 
-    # # import pdb; pdb.set_trace()
-    # print("\n\n")
-    # print("\n###################################################################################\n")
-    # print("request:",request)
-    # print("request.data:",request.data)
-    # print("request.json:",request.json)
-    # print("\n###################################################################################\n")
 
     # Create a cupcake with flavor, size, rating and image data from the body of the request.
     new_cupcake = Cupcake( 
@@ -79,7 +73,43 @@ def create_cupcake():
     return (response_json, 201)
 
 
+# Part 3: UPDATE(patch) and DELETE
+## PATCH /api/cupcakes/<int:cupcake_id>
+@app.route("/api/cupcakes/<int:cupcake_id>", methods=["PATCH"])
+def update_cupcake(cupcake_id):
+    """Updates a particular cupcake and responds w/ JSON of that updated cupcake"""
+
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
+
+    # patch the cupcakes data, else use the cupcakes pre set data
+    cupcake.flavor = request.json.get( "flavor" , cupcake.flavor )
+    cupcake.size   = request.json.get( "size"   , cupcake.size   ) 
+    cupcake.rating = request.json.get( "rating" , cupcake.rating )
+    cupcake.image  = request.json.get( "image"  , cupcake.image  )
+    db.session.commit()
+    
+    # Respond with JSON of the newly-updated cupcake, like this: {cupcake: {id, flavor, size, rating, image}}.
+    return jsonify(cupcake=cupcake.serialize())
 
 
+## DELETE /api/cupcakes/<int:cupcake_id>
+@app.route("/api/cupcakes/<int:cupcake_id>", methods=["DELETE"])
+def delete_cupcake(cupcake_id):
+    """Deletes a particular cupcake"""
+    
+    # Delete cupcake with the id passed in the URL. Respond with JSON like {message: "Deleted"}.
+    cupcake = Cupcake.query.get_or_404(cupcake_id)
 
+    db.session.delete(cupcake)
+    db.session.commit()
 
+    return jsonify(message="Deleted")
+
+    # # debuggin none type 
+    # # import pdb; pdb.set_trace()
+    # print("\n\n")
+    # print("\n###################################################################################\n")
+    # print("request:",request)
+    # print("request.data:",request.data)
+    # print("request.json:",request.json)
+    # print("\n###################################################################################\n")
